@@ -129,7 +129,7 @@ export default {
     },
     methods:{
         getAllReviews(){
-            axios.get('/admin/reviews')
+            axios.get('/reviews')
                 .then((resp)=>{
                     this.reviews = resp.data.reviews;
                 })
@@ -144,7 +144,7 @@ export default {
                 user_id:this.defaultItem.user_id,
                 status:this.defaultItem.status,
             }
-            axios.post('/admin/review/update',ndata,headers)
+            axios.post('/review/update',ndata,headers)
                 .then((resp)=>{
                     this.addDialog = false;
                     this.getAllReviews();
@@ -168,7 +168,7 @@ export default {
                 user_id:this.editedItem.user_id,
                 status:this.editedItem.status,
             }
-            axios.post('/admin/review/update',udata,headers)
+            axios.post('/review/update',udata,headers)
                 .then((resp)=>{
                     this.editDialog = false;
                     this.getAllReviews();
@@ -187,7 +187,7 @@ export default {
                 mtype:'delete',
                 id:this.editedItem.id,
             }
-            axios.post('/admin/review/update',ddata,headers)
+            axios.post('/review/update',ddata,headers)
                 .then((resp)=>{
                     this.deleteDialog = false;
                     this.getAllReviews();

@@ -49,7 +49,7 @@ class FrontController extends Controller
 
     public function eventsApi()
     {
-        $events = Event::withCount('attendees')->get();
+        $events = Event::withCount('attendees')->with('attendees')->orderBy('start_date','DESC')->get();
         return response()->json([
             'success' => true,
             'events' => $events
@@ -58,7 +58,7 @@ class FrontController extends Controller
 
     public function getEventBySlug($slug)
     {
-        $event = Event::where('slug',$slug)->first();
+        $event = Event::withCount('attendees')->with('attendees')->where('slug',$slug)->first();
         if($event){
             return response()->json([
                 'success' => true,
@@ -75,7 +75,7 @@ class FrontController extends Controller
 
     public function galleryApi()
     {
-        $galleries = Gallery::with('photos','videos')->get();
+        $galleries = Gallery::with('photos','video')->get();
         return response()->json([
             'success' => true,
             'galleries' => $galleries

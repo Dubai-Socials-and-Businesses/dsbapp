@@ -1,11 +1,12 @@
 <template>
     <v-container>
         <v-row dense>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="6" class="d-flex ga-3 align-center">
+                <v-icon @click="this.$router.push({name:'AdminGallery'})">mdi-arrow-left</v-icon>
                 <h4 class="text-h5">Add Gallery</h4>
             </v-col>
             <v-col cols="12" md="6" class="text-end">
-                <v-btn @click="addGallery" color="green" density="compact" variant="elevated">Save</v-btn>
+                <v-btn @click="addGallery" color="green" :loading="gloading" density="compact" variant="elevated">Save</v-btn>
             </v-col>
             <v-col cols="12" md="8">
                 <v-card class="border-sm">
@@ -87,6 +88,7 @@ export default {
     data(){
         return{
             cdn:'https://dsbcdn.s3-accelerate.amazonaws.com/',
+            gloading:false,
             showPhotosSection:false,
             title:'',
             main_image:null,
@@ -110,6 +112,11 @@ export default {
                 {title:'gdate',key:'gdate'},
                 {title:'Actions',key:'actions'},
             ]
+        }
+    },
+    computed:{
+        defaultDate(){
+            return new Date();
         }
     },
     created() {
@@ -141,13 +148,14 @@ export default {
             });
         },
         getAllGalleries(){
-            axios.get('/admin/galleries')
+            axios.get('/galleries')
                 .then((resp)=>{
                     this.galleries = resp.data.galleries;
                     this.gdate = this.defaultDate;
                 })
         },
         addGallery(){
+            this.gloading = true;
             const headers = {headers: {'Content-Type': 'multipart/form-data'}}
             const ndata = {
                 title:this.title,
@@ -157,9 +165,18 @@ export default {
                 photos:this.photos,
                 video:this.video
             }
-            axios.post('/admin/gallery/add',ndata,headers)
+            axios.post('/gallery/add',ndata,headers)
                 .then((resp)=>{
                     console.log('resp',resp);
+                    this.gloading = false;
+                    this.$router.push({name:'AdminGallery'});
+                    window.Toast.success(resp.data.message);
+                })
+                .catch((err)=>{
+                    window.Toast.error(err.response.data.message)
+                })
+                .finally(()=>{
+                    this.gloading = false;
                 })
             console.log('ndata',ndata);
         }

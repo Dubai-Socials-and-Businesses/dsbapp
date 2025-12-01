@@ -17,7 +17,21 @@
             <v-col cols="12" md="12">
                 <v-card>
                     <v-data-table :items="galleries" :headers="galleryHeaders" :hide-default-footer="galleries.length < 20">
-
+                        <template v-slot:item.main_image="{item}">
+                            <v-img v-if="item.main_image" :src="cdn+item.main_image" class="my-2"></v-img>
+                        </template>
+                        <template v-slot:item.photos="{item}">
+                            <div class="d-flex flex-wrap ga-1">
+                                <v-btn color="green" density="compact" v-if="item.photos">{{item.photos.length}} Photos</v-btn>
+                                <v-btn color="info" density="compact" v-if="item.video">Video</v-btn>
+                            </div>
+                        </template>
+                        <template v-slot:item.gdate="{item}">
+                            {{dayjs(item.gdate)}}
+                        </template>
+                        <template v-slot:item.actions="{item}">
+                            <v-btn :to="{name:'AdminGalleryEdit',params:{gallery_id:item.id}}" density="compact" color="navy" variant="outlined">Edit</v-btn>
+                        </template>
                     </v-data-table>
                 </v-card>
             </v-col>
@@ -26,17 +40,20 @@
 </template>
 <script>
 import axios from "axios";
+import dayjs from "dayjs";
 
 export default {
     name:'AdminGallery',
     data(){
         return{
+            cdn:'https://dsbcdn.s3-accelerate.amazonaws.com/',
             galleries:[],
             galleryHeaders:[
                 {title:'Title',key:'title'},
-                {title:'Image',key:'main_image'},
+                {title:'Main Image',key:'main_image'},
                 {title:'Description',key:'description'},
-                {title:'Datetime',key:'datetime'},
+                {title:'Other Photos',key:'photos'},
+                {title:'Datetime',key:'gdate'},
                 {title:'Actions',key:'actions'},
             ]
         }
@@ -45,8 +62,9 @@ export default {
         this.getAllGalleries();
     },
     methods:{
+        dayjs,
         getAllGalleries(){
-            axios.get('/admin/galleries')
+            axios.get('/galleries')
                 .then((resp)=>{
                     this.galleries = resp.data.galleries;
                 })

@@ -54,7 +54,7 @@ export default {
     },
     methods:{
         getAdminDashboard(){
-            axios.get('/admin/dashboard')
+            axios.get('/dashboard')
                 .then((resp)=>{
                     this.users_count = resp.data.users_count;
                     this.events_count = resp.data.events_count;

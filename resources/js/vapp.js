@@ -9,9 +9,23 @@ import { createApp } from 'vue';
 import App from "./App.vue";
 import vuetify from "./vuetify.js";
 import router from "./router";
+import store from "./store";
+import Toast, {useToast} from "vue-toastification";
+import "vue-toastification/dist/index.css";
+
+const options = {
+    position: 'bottom-right',
+    timeout: 1000,
+    closeOnClick: true,
+    pauseOnHover: true,
+};
 
 const app = createApp(App);
 
+app.use(Toast,options)
+app.config.globalProperties.$toast = useToast();
+window.Toast = useToast();
 app.use(router);
-app.use(vuetify)
+app.use(vuetify);
+app.use(store);
 app.mount('#app');

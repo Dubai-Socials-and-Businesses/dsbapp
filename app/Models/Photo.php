@@ -16,4 +16,9 @@ class Photo extends Model
     ];
 
     public $hidden = ['created_at','updated_at'];
+
+    public function gallery()
+    {
+        return $this->belongsTo(Gallery::class, 'id', 'gallery_id',);
+    }
 }

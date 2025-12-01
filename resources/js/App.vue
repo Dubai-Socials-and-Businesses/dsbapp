@@ -1,6 +1,11 @@
 <template>
     <v-app>
-        <v-navigation-drawer class="bg-light-subtle">
+        <div v-if="!$store.state.isAuthenticated && !$store.state.user"
+             class="d-flex justify-center align-center" style="height: 100vh;">
+            <v-progress-circular indeterminate color="primary"/>
+        </div>
+
+        <v-navigation-drawer v-else-if="$store.state.isAuthenticated" class="bg-light-subtle">
             <v-list bgColor="navy">
                 <v-list-item>
                     <template v-slot:prepend>
@@ -15,23 +20,35 @@
                 </v-list-item>
             </v-list>
             <v-list density="compact" nav base-color="navy" variant="elevated" class="fw-bold" activeClass="bg-teal">
-                <v-list-item to="/sadmin">Dashboard</v-list-item>
+                <v-list-item to="/sadmin/dashboard">Dashboard</v-list-item>
                 <v-list-item to="/sadmin/users">Users</v-list-item>
                 <v-list-item to="/sadmin/gallery">Gallery</v-list-item>
                 <v-list-item to="/sadmin/events">Events</v-list-item>
                 <v-list-item to="/sadmin/blogs">Blogs</v-list-item>
                 <v-list-item to="/sadmin/reviews">Reviews</v-list-item>
                 <v-list-item to="/sadmin/partners">Partners</v-list-item>
+                <v-divider></v-divider>
+                <v-list-item @click="logout" title="Logout" prepend-icon="mdi-logout" />
             </v-list>
+
         </v-navigation-drawer>
-        <v-main class="py-4 bg-light-subtle">
+        <v-main v-if="$store.state.isAuthenticated" class="py-4 bg-light-subtle">
             <router-view/>
         </v-main>
     </v-app>
 </template>
 <script>
 export default {
-    name:"App"
+    name:"App",
+    async mounted(){
+        await this.$store.dispatch('checkAuth')
+    },
+    methods: {
+        logout() {
+            this.$store.dispatch('logout')
+            window.location.href = '/login'
+        }
+    }
 }
 
 </script>

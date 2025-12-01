@@ -75,7 +75,7 @@ export default {
     methods:{
         dayjs,
         getAllUsers(){
-            axios.get('/admin/users')
+            axios.get('/users')
                 .then((resp)=>{
                     this.users = resp.data.users;
                 })

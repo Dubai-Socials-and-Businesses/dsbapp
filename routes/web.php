@@ -29,13 +29,17 @@ Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-Route::prefix('/admin')->group(function(){
+Route::prefix('/admin')->middleware('auth')->group(function(){
     Route::get('/dashboard',[HomeController::class,'adminDashboard'])->name('adminDashboard');
     Route::get('/users',[HomeController::class,'adminUsers'])->name('adminUsers');
     Route::get('/galleries',[HomeController::class,'adminGalleries'])->name('adminGalleries');
     Route::post('/gallery/add',[HomeController::class,'addGallery'])->name('addGallery');
+    Route::get('/gallery/edit/{id}',[HomeController::class,'getAdminGalleryByid'])->name('getAdminGalleryByid');
+    Route::post('/gallery/edit',[HomeController::class,'editGallery'])->name('editGallery');
     Route::get('/events',[HomeController::class,'adminEvents'])->name('adminEvents');
     Route::post('/event/add',[HomeController::class,'addEvent'])->name('addEvent');
+    Route::get('/event/edit/{id}',[HomeController::class,'getAdminEventById'])->name('getAdminEventById');
+    Route::post('/event/edit',[HomeController::class,'editEvent'])->name('editEvent');
     Route::get('/blogs',[HomeController::class,'adminBlogs'])->name('adminBlogs');
     Route::get('/reviews',[HomeController::class,'adminReviews'])->name('adminReviews');
     Route::post('/review/update',[HomeController::class,'updateReview'])->name('updateReview');
@@ -43,9 +47,11 @@ Route::prefix('/admin')->group(function(){
     Route::post('/partner/update',[HomeController::class,'updatePartner'])->name('updatePartner');
 });
 
+Route::post('/admin/logout', [HomeController::class, 'adminLogout'])->name('admin.logout');
+
 Route::get('/{any}', function () {
     return view('sadmin');
-})->where('any', '.*$');
+})->where('any', '.*$')->middleware('auth');
 
 //Route::get('/{any}', function () {
 //    return view('welcome');

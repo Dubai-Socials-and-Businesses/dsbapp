@@ -1,11 +1,12 @@
 <template>
     <v-container>
         <v-row dense>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="6" class="d-flex ga-3 align-center">
+                <v-icon @click="this.$router.push({name:'AdminEvents'})">mdi-arrow-left</v-icon>
                 <h4 class="text-h5">Add Event</h4>
             </v-col>
             <v-col cols="12" md="6" class="text-end">
-                <v-btn @click="addEvent" color="green" density="compact" variant="elevated">Save</v-btn>
+                <v-btn @click="addEvent" :loading="aloading" :disabled="aloading" color="green" density="compact" variant="elevated">Save</v-btn>
             </v-col>
             <v-col cols="12" md="8">
                 <v-card class="border-sm">
@@ -25,15 +26,17 @@
                 <v-card class="border-sm mt-5">
                     <v-card-title>Event Timing</v-card-title>
                     <v-card-text>
-                        <v-row>
+                        <v-row align="end">
                             <v-col cols="12" md="6">
-                                <v-date-input v-model="start_date" :displayFormat="formatDate" variant="underlined" label="Start Date"
+                                <div v-if="start_date">{{ dayjs(`${start_date}`).format('D MMM, YYYY') }}</div>
+                                <v-date-input v-model="start_date" variant="underlined" label="Start Date"
                                               prepend-icon="" prepend-inner-icon="mdi-calendar"></v-date-input>
                                 <v-time-picker v-model="start_time" title="Start Time" density="compact"
                                             color="navy" variant="input"></v-time-picker>
                             </v-col>
                             <v-col cols="12" md="6">
-                                <v-date-input v-model="end_date" :displayFormat="formatDate" variant="underlined" label="End Date"
+                                <div v-if="end_date">{{ dayjs(`${end_date}`).format('D MMM, YYYY') }}</div>
+                                <v-date-input v-model="end_date" variant="underlined" label="End Date"
                                               prepend-icon="" prepend-inner-icon="mdi-calendar"></v-date-input>
                                 <v-time-picker v-model="end_time" title="End Time" density="compact"
                                             color="navy" variant="input"></v-time-picker>
@@ -73,6 +76,7 @@
 import axios from "axios";
 import { VFileUpload } from 'vuetify/labs/VFileUpload'
 import { VDateInput } from "vuetify/labs/components";
+import dayjs from "dayjs";
 
 export default {
     name:'AdminEventAdd',
@@ -80,15 +84,16 @@ export default {
     data(){
         return{
             cdn:'https://dsbcdn.s3-accelerate.amazonaws.com/',
+            aloading:false,
             title:'',
             excerpt:'',
             description:'',
             start_at:null,
             start_date:null,
-            start_time:'09:00',
+            start_time:'09:00:00',
             end_at:null,
             end_date:null,
-            end_time:'11:00',
+            end_time:'11:00:00',
             image:null,
             video:null,
             status:'active',
@@ -108,6 +113,9 @@ export default {
         }
     },
     computed: {
+        dayjs() {
+            return dayjs
+        },
         minDate(){
             return new Date();
         }
@@ -129,7 +137,7 @@ export default {
             });
         },
         getAllEvents(){
-            axios.get('/admin/events')
+            axios.get('/events')
                 .then((resp)=>{
                     this.events = resp.data.events;
                     this.users = resp.data.users;
@@ -137,6 +145,7 @@ export default {
                 })
         },
         addEvent(){
+            this.aloading = true;
             const headers = {headers: {'Content-Type': 'multipart/form-data'}}
             const ndata = {
                 title:this.title,
@@ -154,11 +163,11 @@ export default {
                 tags:this.tags,
                 status:this.status,
             }
-            axios.post('/admin/event/add',ndata,headers)
+            axios.post('/event/add',ndata,headers)
                 .then((resp)=>{
-                    console.log('resp',resp);
+                    this.aloading = false;
+                    this.$router.push({name:'AdminEventEdit',params:{event_id:resp.data?.event?.id}});
                 })
-            console.log('ndata',ndata);
         }
     }
 }

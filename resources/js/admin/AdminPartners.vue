@@ -152,7 +152,7 @@ export default {
     methods:{
         dayjs,
         getAllPartners(){
-            axios.get('/admin/partners')
+            axios.get('/partners')
                 .then((resp)=>{
                     this.partners = resp.data.partners;
                 })
@@ -167,7 +167,7 @@ export default {
                 package:this.defaultItem.package,
                 status:this.defaultItem.status,
             }
-            axios.post('/admin/partner/update',ndata,headers)
+            axios.post('/partner/update',ndata,headers)
                 .then((resp)=>{
                     this.addDialog = false;
                     this.getAllPartners();
@@ -191,7 +191,7 @@ export default {
                 package:this.editedItem.package,
                 status:this.editedItem.status,
             }
-            axios.post('/admin/partner/update',udata,headers)
+            axios.post('/partner/update',udata,headers)
                 .then((resp)=>{
                     this.editDialog = false;
                     this.getAllPartners();
@@ -210,7 +210,7 @@ export default {
                 mtype:'delete',
                 id:this.editedItem.id,
             }
-            axios.post('/admin/partner/update',ddata,headers)
+            axios.post('/partner/update',ddata,headers)
                 .then((resp)=>{
                     this.deleteDialog = false;
                     this.getAllPartners();
