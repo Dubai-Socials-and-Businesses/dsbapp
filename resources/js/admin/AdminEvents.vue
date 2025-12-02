@@ -22,12 +22,14 @@
                        </template>
                        <template v-slot:item.excerpt="{item}">
                            <div>{{item.excerpt}}</div>
-                           <div>{{item.location}}</div>
+                           <div><v-icon>mdi-map-marker-outline</v-icon>{{item.location}}</div>
                        </template>
                        <template v-slot:item.start_date="{item}">
                            <div>
                                <div>{{ dayjs(`${item.start_date} ${item.start_time}`).format('D MMM, YYYY h:mm a') }}</div>
                                <div>{{ dayjs(`${item.end_date} ${item.end_time}`).format('D MMM, YYYY h:mm a') }}</div>
+                               <v-btn v-if="item.status === 'active'" color="green" class="my-1" size="x-small">Active</v-btn>
+                               <v-btn v-else color="red" class="my-1" size="x-small">Inactive</v-btn>
                            </div>
                        </template>
                        <template v-slot:item.actions="{item}">

@@ -90,26 +90,26 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <!-- Left Side Of Navbar -->
-                <ul class="navbar-nav mx-auto fw-semibold">
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ route('homepage') }}">{{ __('The Spark') }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ route('about') }}">{{ __('The Circle') }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ route('gallery') }}">{{ __('Gallery') }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ route('events') }}">{{ __('The Vibe') }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ route('blogs') }}">{{ __('Blogs') }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ route('contact') }}">{{ __('The Gateway') }}</a>
-                    </li>
-                </ul>
+{{--                <ul class="navbar-nav mx-auto fw-semibold">--}}
+{{--                    <li class="nav-item">--}}
+{{--                        <a class="nav-link text-white" href="{{ route('homepage') }}">{{ __('The Spark') }}</a>--}}
+{{--                    </li>--}}
+{{--                    <li class="nav-item">--}}
+{{--                        <a class="nav-link text-white" href="{{ route('about') }}">{{ __('The Circle') }}</a>--}}
+{{--                    </li>--}}
+{{--                    <li class="nav-item">--}}
+{{--                        <a class="nav-link text-white" href="{{ route('gallery') }}">{{ __('Gallery') }}</a>--}}
+{{--                    </li>--}}
+{{--                    <li class="nav-item">--}}
+{{--                        <a class="nav-link text-white" href="{{ route('events') }}">{{ __('The Vibe') }}</a>--}}
+{{--                    </li>--}}
+{{--                    <li class="nav-item">--}}
+{{--                        <a class="nav-link text-white" href="{{ route('blogs') }}">{{ __('Blogs') }}</a>--}}
+{{--                    </li>--}}
+{{--                    <li class="nav-item">--}}
+{{--                        <a class="nav-link text-white" href="{{ route('contact') }}">{{ __('The Gateway') }}</a>--}}
+{{--                    </li>--}}
+{{--                </ul>--}}
 
                 <!-- Right Side Of Navbar -->
                 <ul class="navbar-nav ms-auto">
@@ -121,11 +121,11 @@
                             </li>
                         @endif
 
-                        @if (Route::has('register'))
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                            </li>
-                        @endif
+{{--                        @if (Route::has('register'))--}}
+{{--                            <li class="nav-item">--}}
+{{--                                <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>--}}
+{{--                            </li>--}}
+{{--                        @endif--}}
                     @else
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
@@ -143,6 +143,7 @@
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                     @csrf
                                 </form>
+                                <a class="dropdown-item" href="/sadmin/dashboard">Dashboard</a>
                             </div>
                         </li>
                     @endguest
@@ -193,8 +194,8 @@
         </div>
     </div>
 </v-app>
-<script src=" https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js "></script>
-<link href=" https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css " rel="stylesheet">
+{{--<script src=" https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js "></script>--}}
+{{--<link href=" https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css " rel="stylesheet">--}}
 @vite(['resources/js/app.js'])
 </body>
 </html>

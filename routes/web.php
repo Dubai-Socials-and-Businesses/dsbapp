@@ -14,16 +14,16 @@ use App\Http\Controllers\FrontController;
 |
 */
 
-//Route::get('/', function () {
-//    return view('welcome');
-//});
+Route::get('/', function () {
+    return view('auth.login');
+});
 
-Route::get('/',[FrontController::class,'homePage'])->name('homepage');
-Route::get('/gallery', [FrontController::class,'gallery'])->name('gallery');
-Route::get('/events', [FrontController::class,'events'])->name('events');
-Route::get('/about', [FrontController::class,'about'])->name('about');
-Route::get('/contact', [FrontController::class,'contact'])->name('contact');
-Route::get('/blogs', [FrontController::class,'blogs'])->name('blogs');
+//Route::get('/',[FrontController::class,'homePage'])->name('homepage');
+//Route::get('/gallery', [FrontController::class,'gallery'])->name('gallery');
+//Route::get('/events', [FrontController::class,'events'])->name('events');
+//Route::get('/about', [FrontController::class,'about'])->name('about');
+//Route::get('/contact', [FrontController::class,'contact'])->name('contact');
+//Route::get('/blogs', [FrontController::class,'blogs'])->name('blogs');
 
 Auth::routes();
 
@@ -41,6 +41,9 @@ Route::prefix('/admin')->middleware('auth')->group(function(){
     Route::get('/event/edit/{id}',[HomeController::class,'getAdminEventById'])->name('getAdminEventById');
     Route::post('/event/edit',[HomeController::class,'editEvent'])->name('editEvent');
     Route::get('/blogs',[HomeController::class,'adminBlogs'])->name('adminBlogs');
+    Route::post('/blog/add',[HomeController::class,'addBlog'])->name('addBlog');
+    Route::get('/blog/edit/{id}',[HomeController::class,'getAdminBlogById'])->name('getAdminBlogById');
+    Route::post('/blog/edit',[HomeController::class,'editBlog'])->name('editBlog');
     Route::get('/reviews',[HomeController::class,'adminReviews'])->name('adminReviews');
     Route::post('/review/update',[HomeController::class,'updateReview'])->name('updateReview');
     Route::get('/partners',[HomeController::class,'adminPartners'])->name('adminPartners');

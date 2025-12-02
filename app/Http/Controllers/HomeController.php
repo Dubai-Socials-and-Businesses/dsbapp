@@ -45,12 +45,16 @@ class HomeController extends Controller
         $events = Event::all();
         $reviews = Review::all();
         $blogs = Blog::all();
+        $galleries = Gallery::all();
+        $partners = Partner::all();
         return response([
             'user' => auth()->user(),
             'users_count' => $users->count(),
             'events_count' => $events->count(),
             'reviews_count' => $reviews->count(),
             'blogs_count' => $blogs->count(),
+            'galleries_count' => $galleries->count(),
+            'partners_count' => $partners->count(),
         ]);
     }
 
@@ -517,6 +521,120 @@ class HomeController extends Controller
             'status' => true,
             'blogs' => $blogs,
         ]);
+    }
+
+    public function addBlog(Request $request)
+    {
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'excerpt' => 'nullable|string',
+            'description' => 'nullable|string',
+            'tags'=>'nullable|array',
+            'status' => 'required|in:active,inactive',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+        DB::beginTransaction();
+        try {
+            $imageUrl = null;
+            if($request->hasFile('image')) {
+                $image = $request->file('image');
+                $filename = 'blog_'.uniqid().'.png';
+                $imgpath = 'blogs/' . $filename;
+                $img = Image::make($image->getRealPath())->resize(1200, 675, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+                $success = Storage::disk('s3')->put($imgpath, (string)$img->encode());
+                if ($success) {
+                    $imageUrl = $imgpath;
+                }
+            }
+            $blog = Blog::create([
+                'title' => $validatedData['title'],
+                'slug' => Str::slug($validatedData['title']).time(),
+                'excerpt' => $validatedData['excerpt'],
+                'description' => $validatedData['description'],
+                'image' => $imageUrl,
+                'status' => $validatedData['status'],
+                'tags' => $validatedData['tags'] ?? null,
+                'user_id' => 2,
+            ]);
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Blog created successfully!',
+                'blog' => $blog,
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function getAdminBlogByid($id)
+    {
+        $blog = Blog::where('id',$id)->first();
+        if($blog) {
+            return response()->json([
+                'success' => true,
+                'blog' => $blog,
+                'message' => 'Blog retrieved successfully!',
+            ]);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Blog not found!']);
+        }
+    }
+
+    public function editBlog(Request $request)
+    {
+        $validatedData = $request->validate([
+            'id' => 'required|exists:blogs,id',
+            'title' => 'required|string|max:255',
+            'status' => 'required|in:active,inactive',
+        ]);
+        DB::beginTransaction();
+        try {
+            $blog = Blog::where('id',$validatedData['id'])->first();
+            if($blog) {
+                $imageUrl = $blog->image;
+                if($request->hasFile('nimage')) {
+                    $image = $request->file('nimage');
+                    $filename = 'blog_'.uniqid().'.png';
+                    $imgpath = 'blogs/' . $filename;
+                    $img = Image::make($image->getRealPath())->resize(1200, 675, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                    $success = Storage::disk('s3')->put($imgpath, (string)$img->encode());
+                    if ($success) {
+                        $imageUrl = $imgpath;
+                    }
+                }
+                $blog->update([
+                    'title' => $validatedData['title'],
+                    'description' => $request->get('description'),
+                    'excerpt' => $request->get('excerpt'),
+                    'tags' => $request->get('tags') ?? null,
+                    'image' => $imageUrl,
+                    'status' => $validatedData['status'],
+                ]);
+            }
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Blog updated successfully!',
+                'blog' => $blog,
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function adminPartners()
