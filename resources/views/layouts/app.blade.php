@@ -76,7 +76,7 @@
 <v-app id="app" v-cloak>
     <nav class="navbar navbar-expand-md navbar-dark bg-navy shadow-sm py-0">
         <div class="container">
-            <a class="navbar-brand d-flex gap-2 align-center" href="{{ url('/') }}">
+            <a class="navbar-brand d-flex gap-2 align-center" href="{{ 'https://dubaisocialsandbusinesses.com/' }}">
                 <img src="{{asset('/logo.png')}}" width="60" height="60" alt="logo">
                 <span class="logo">
                         <span class="brand">Dubai</span>
