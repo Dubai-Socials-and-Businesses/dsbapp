@@ -31,14 +31,14 @@
                         <v-row align="end">
                             <v-col cols="12" md="6">
                                 <div v-if="event.start_date">{{ dayjs(`${event.start_date}`).format('D MMM, YYYY') }}</div>
-                                <v-date-input v-model="event.start_date" :displayFormat="formatDate" variant="underlined" label="Start Date"
+                                <v-date-input v-model="event.start_date" variant="underlined" label="Start Date"
                                               prepend-icon="" prepend-inner-icon="mdi-calendar"></v-date-input>
                                 <v-time-picker v-model="event.start_time" title="Start Time" density="compact"
                                             color="navy" variant="input"></v-time-picker>
                             </v-col>
                             <v-col cols="12" md="6">
                                 <div v-if="event.end_date">{{ dayjs(`${event.end_date}`).format('D MMM, YYYY') }}</div>
-                                <v-date-input v-model="event.end_date" :displayFormat="formatDate" variant="underlined" label="End Date"
+                                <v-date-input v-model="event.end_date" variant="underlined" label="End Date"
                                               prepend-icon="" prepend-inner-icon="mdi-calendar"></v-date-input>
                                 <v-time-picker v-model="event.end_time" title="End Time" density="compact"
                                             color="navy" variant="input"></v-time-picker>
@@ -139,7 +139,7 @@ export default {
     methods:{
         // formatDate(date) {
         //     if (!date) return '';
-        //     return new Date(date).toLocaleString('en-GB', {
+        //     return new Date(date).toLocaleString('en-US', {
         //         timeZone: 'Asia/Dubai',
         //         day: '2-digit',
         //         month: '2-digit',
@@ -175,9 +175,9 @@ export default {
                 excerpt:this.event.excerpt,
                 image:this.image,
                 video:this.video,
-                start_date:this.event.start_date,
+                start_date:dayjs(this.event.start_date).format('YYYY-MM-DD'),
                 start_time:this.event.start_time,
-                end_date:this.event.end_date,
+                end_date:dayjs(this.event.end_date).format('YYYY-MM-DD'),
                 end_time:this.event.end_time,
                 organizer:this.event.organizer,
                 location:this.event.location,
@@ -190,8 +190,14 @@ export default {
                     this.getEventById();
                     this.image = null;
                     this.video = null;
-                    this.eloading = false;
+                    window.Toast.success('Event Updated')
                     console.log('resp',resp);
+                })
+                .catch((err)=>{
+                    window.Toast.error(err.message);
+                })
+                .finally(()=>{
+                    this.eloading = false;
                 })
         }
     }

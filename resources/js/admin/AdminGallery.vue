@@ -16,7 +16,7 @@
             </v-col>
             <v-col cols="12" md="12">
                 <v-card>
-                    <v-data-table :items="galleries" :headers="galleryHeaders" :hide-default-footer="galleries.length < 20">
+                    <v-data-table :items="galleries" :headers="galleryHeaders" :hide-default-footer="galleries.length < 10">
                         <template v-slot:item.main_image="{item}">
                             <v-img v-if="item.main_image" :src="cdn+item.main_image" class="my-2"></v-img>
                         </template>
@@ -27,7 +27,9 @@
                             </div>
                         </template>
                         <template v-slot:item.gdate="{item}">
-                            {{dayjs(item.gdate)}}
+                            <div>
+                                <div>{{formatDate(item.gdate)}}</div>
+                            </div>
                         </template>
                         <template v-slot:item.actions="{item}">
                             <v-btn :to="{name:'AdminGalleryEdit',params:{gallery_id:item.id}}" density="compact" color="navy" variant="outlined">Edit</v-btn>
@@ -63,6 +65,18 @@ export default {
     },
     methods:{
         dayjs,
+        formatDate(date) {
+            if (!date) return '';
+            return new Date(date).toLocaleString('en-GB', {
+                timeZone: 'Asia/Dubai',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                // hour: '2-digit',
+                // minute: '2-digit',
+                // hour12: true
+            });
+        },
         getAllGalleries(){
             axios.get('/galleries')
                 .then((resp)=>{

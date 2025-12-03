@@ -124,18 +124,18 @@ export default {
         this.getAllEvents();
     },
     methods:{
-        formatDate(date) {
-            if (!date) return '';
-            return new Date(date).toLocaleString('en-GB', {
-                timeZone: 'Asia/Dubai',
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                // hour: '2-digit',
-                // minute: '2-digit',
-                // hour12: false
-            });
-        },
+        // formatDate(date) {
+        //     if (!date) return '';
+        //     return new Date(date).toLocaleString('en-GB', {
+        //         timeZone: 'Asia/Dubai',
+        //         day: '2-digit',
+        //         month: '2-digit',
+        //         year: 'numeric',
+        //         // hour: '2-digit',
+        //         // minute: '2-digit',
+        //         // hour12: false
+        //     });
+        // },
         getAllEvents(){
             axios.get('/events')
                 .then((resp)=>{
@@ -153,9 +153,9 @@ export default {
                 excerpt:this.excerpt,
                 image:this.image,
                 video:this.video,
-                start_date:this.start_date,
+                start_date:dayjs(this.start_date).format('YYYY-MM-DD'),
                 start_time:this.start_time,
-                end_date:this.end_date,
+                end_date:dayjs(this.end_date).format('YYYY-MM-DD'),
                 end_time:this.end_time,
                 organizer:this.organizer,
                 location:this.location,
@@ -165,8 +165,13 @@ export default {
             }
             axios.post('/event/add',ndata,headers)
                 .then((resp)=>{
-                    this.aloading = false;
                     this.$router.push({name:'AdminEventEdit',params:{event_id:resp.data?.event?.id}});
+                })
+                .catch((err)=>{
+                    window.Toast.error(err.message);
+                })
+                .finally(()=>{
+                    this.aloading = false;
                 })
         }
     }

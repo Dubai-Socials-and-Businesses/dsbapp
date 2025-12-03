@@ -82,6 +82,7 @@
 <script>
 import axios from "axios";
 import { VFileUpload } from 'vuetify/labs/VFileUpload'
+import dayjs from "dayjs";
 export default {
     name:'AdminGalleryAdd',
     components:{VFileUpload},
@@ -151,7 +152,7 @@ export default {
             axios.get('/galleries')
                 .then((resp)=>{
                     this.galleries = resp.data.galleries;
-                    this.gdate = this.defaultDate;
+                    this.gdate = dayjs(this.defaultDate).format('YYYY-MM-DD');
                 })
         },
         addGallery(){
@@ -161,7 +162,7 @@ export default {
                 title:this.title,
                 description:this.description,
                 main_image:this.main_image,
-                gdate:this.gdate,
+                gdate:dayjs(this.gdate).format('YYYY-MM-DD'),
                 photos:this.photos,
                 video:this.video
             }

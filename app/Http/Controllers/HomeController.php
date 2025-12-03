@@ -96,14 +96,22 @@ class HomeController extends Controller
         ]);
 
         $eslug = Str::slug($request->title, '-').'-'.Carbon::now()->format('YmdHis');
+        $startDateTime = Carbon::parse($validated['start_date'] . ' ' . ($request->get('start_time', '00:00:00')), 'Asia/Dubai');
+        $endDateTime = $validated['end_date'] ?
+            Carbon::parse($validated['end_date'] . ' ' . ($request->get('end_time', '00:00:00')), 'Asia/Dubai') : null;
 
-        $startDate = Carbon::parse($validated['start_date'])->format('Y-m-d');
-        $endDate = $validated['end_date'] ? Carbon::parse($validated['end_date'])->format('Y-m-d') : null;
-        $startTime = $request->get('start_time', '00:00');
-        $endTime = $request->get('end_time', '00:00');
+        $startDate = $startDateTime->format('Y-m-d');
+        $startTime = $startDateTime->format('H:i:s');
+        $endDate = $endDateTime?->format('Y-m-d');
+        $endTime = $endDateTime?->format('H:i:s');
 
-        $startDateTime = $startDate . ' ' . $startTime;
-        $endDateTime = $endDate . ' ' . $endTime;
+//        $startDate = Carbon::parse($validated['start_date'])->format('Y-m-d');
+//        $endDate = $validated['end_date'] ? Carbon::parse($validated['end_date'])->format('Y-m-d') : null;
+//        $startTime = $request->get('start_time', '00:00');
+//        $endTime = $request->get('end_time', '00:00');
+//
+//        $startDateTime = $startDate . ' ' . $startTime;
+//        $endDateTime = $endDate . ' ' . $endTime;
         $imageUrl = null;
         $videoUrl = null;
         if ($request->hasFile('image')) {
@@ -147,8 +155,8 @@ class HomeController extends Controller
                 'start_time' => $startTime,
                 'end_date' => $endDate,
                 'end_time' => $endTime,
-                'start_at' => Carbon::parse($startDateTime)->tz('Asia/Dubai'),
-                'end_at' => $endDateTime ? Carbon::parse($endDateTime)->tz('Asia/Dubai') : null,
+                'start_at' => $startDateTime,
+                'end_at' => $endDateTime,
             ]);
             DB::commit();
             return response()->json([
@@ -195,12 +203,15 @@ class HomeController extends Controller
         ]);
 
         $event = Event::where('id', $validated['id'])->first();
-        $startDate = Carbon::parse($validated['start_date'])->format('Y-m-d');
-        $endDate = $validated['end_date'] ? Carbon::parse($validated['end_date'])->format('Y-m-d') : null;
-        $startTime = $request->get('start_time', '00:00');
-        $endTime = $request->get('end_time', '00:00');
-        $startDateTime = $startDate . ' ' . $startTime;
-        $endDateTime = $endDate . ' ' . $endTime;
+        $startDateTime = Carbon::parse($validated['start_date'] . ' ' . ($request->get('start_time', '00:00:00')), 'Asia/Dubai');
+        $endDateTime = $validated['end_date'] ?
+            Carbon::parse($validated['end_date'] . ' ' . ($request->get('end_time', '00:00:00')), 'Asia/Dubai') : null;
+
+        $startDate = $startDateTime->format('Y-m-d');
+        $startTime = $startDateTime->format('H:i:s');
+        $endDate = $endDateTime?->format('Y-m-d');
+        $endTime = $endDateTime?->format('H:i:s');
+
         $imageUrl = $event->image ?? null;
         $videoUrl = $event->video ?? null;
         if ($request->hasFile('image')) {
@@ -244,8 +255,8 @@ class HomeController extends Controller
                 'start_time' => $startTime,
                 'end_date' => $endDate,
                 'end_time' => $endTime,
-                'start_at' => Carbon::parse($startDateTime)->tz('Asia/Dubai'),
-                'end_at' => $endDateTime ? Carbon::parse($endDateTime)->tz('Asia/Dubai') : null,
+                'start_at' => $startDateTime,
+                'end_at' => $endDateTime,
             ]);
             DB::commit();
             return response()->json([
