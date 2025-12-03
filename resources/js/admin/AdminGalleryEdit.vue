@@ -70,6 +70,59 @@
                         </v-row>
                     </v-card-text>
                 </v-card>
+                <v-card class="mt-5 border-sm">
+                    <v-card-title class="d-flex">Existing Reels</v-card-title>
+                    <v-card-text v-if="ereels.length > 0">
+                        <v-row>
+                            <v-col cols="12" md="4" v-for="(ereel, index) in ereels" :key="index">
+                                <v-text-field v-model="ereel.title" :placeholder="ereel.title"
+                                              :label="`Reel ${index + 1} Title`" persistent-placeholder
+                                              variant="outlined" density="compact"
+                                />
+                                <v-video v-if="ereel.reel_url" :src="cdn+ereel.reel_url" aspectRatio="9/16" controlsVariant="tube"
+                                         image="https://cdn.jsek.work/cdn/vt-sunflowers.jpg"></v-video>
+                                <VFileUpload class="mt-2"
+                                             v-model="ereel.nreel_url" clearable
+                                             accept="video/*" title="Change Reel"
+                                             icon="mdi-video"
+                                             variant="outlined"
+                                             density="compact"
+                                />
+                                <v-btn variant="outlined" color="error" density="compact" class="mt-2"
+                                       @click="removeEreel(ereel.id)">
+                                    <v-icon>mdi-delete</v-icon> Remove
+                                </v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-card-text>
+                    <v-card-title class="d-flex">New Reels
+                        <v-spacer />
+                        <v-btn color="primary" size="small" @click="addReel">
+                            {{ reels.length === 0 ? 'Add More Reel' : 'Add More' }}
+                        </v-btn>
+                    </v-card-title>
+                    <v-card-text>
+                        <v-row>
+                            <v-col cols="12" md="4" v-for="(reel, index) in reels" :key="index">
+                                <v-text-field v-model="reel.title" :placeholder="gallery.title"
+                                              :label="`Reel ${index + 1} Title`" persistent-placeholder
+                                              variant="outlined" density="compact"
+                                />
+                                <VFileUpload class="mt-2"
+                                             v-model="reel.nreel_url" clearable
+                                             accept="video/*" title="Upload Reel"
+                                             icon="mdi-video"
+                                             variant="outlined"
+                                             density="compact"
+                                />
+                                <v-btn variant="outlined" color="error" density="compact" class="mt-2"
+                                       @click="removeReel(index)">
+                                    <v-icon>mdi-delete</v-icon> Remove
+                                </v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-card-text>
+                </v-card>
             </v-col>
             <v-col cols="12" md="4">
                 <v-card class="border-sm">
@@ -115,6 +168,7 @@ export default {
             gloading:false,
             gallery:{},
             showPhotosSection:false,
+            showReelsSection:false,
             main_image:null,
             gdate:null,
             gphotos:[],
@@ -122,6 +176,12 @@ export default {
             photo:{
                 title:'',
                 nimage:null,
+            },
+            ereels:[],
+            reels:[],
+            reel:{
+                title:'',
+                nreel_url:null,
             },
             video:{
                 id:'',
@@ -142,6 +202,18 @@ export default {
                 image: null,
             });
         },
+        addReel() {
+            this.reels.push({
+                title: '',
+                reel_url: null,
+            });
+        },
+        removeReel(index) {
+            this.reels.splice(index, 1);
+            if (this.reels.length === 0) {
+                this.showReelsSection = false;
+            }
+        },
         removePhoto(index) {
             this.photos.splice(index, 1);
             if (this.photos.length === 0) {
@@ -151,6 +223,10 @@ export default {
         removeGPhoto(id) {
             console.log('id',id)
             this.gphotos = this.gphotos.filter(photo => photo.id !== id);
+        },
+        removeEreel(id) {
+            console.log('id',id)
+            this.ereels = this.ereels.filter(reel => reel.id !== id);
         },
         formatDate(date) {
             if (!date) return '';
@@ -170,6 +246,7 @@ export default {
                     const gdata = resp.data.gallery;
                     this.gallery = gdata;
                     this.gphotos = gdata?.photos || [];
+                    this.ereels = gdata?.reels || [];
                     this.video = gdata?.video || {};
                 })
         },
@@ -184,6 +261,8 @@ export default {
                 gdate:this.gallery.gdate,
                 gphotos:this.gphotos,
                 photos:this.photos,
+                ereels:this.ereels,
+                reels:this.reels,
                 video: {
                     id:this.video.id,
                     title:this.video.title,
@@ -199,7 +278,9 @@ export default {
                     this.main_image = null;
                     this.video.nvideo = null;
                     this.photos = [];
+                    this.reels = [];
                     this.photo = {};
+                    this.reel = {};
                     this.getGalleryById();
                     window.Toast.success(resp.data.message);
                 })

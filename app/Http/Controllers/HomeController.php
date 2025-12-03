@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\Gallery;
 use App\Models\Partner;
 use App\Models\Photo;
+use App\Models\Reel;
 use App\Models\Review;
 use App\Models\User;
 use App\Models\Video;
@@ -274,7 +275,7 @@ class HomeController extends Controller
 
     public function adminGalleries()
     {
-        $galleries = Gallery::with('photos','video')->get();
+        $galleries = Gallery::with('photos','video','reels')->get();
         return response()->json([
             'status' => true,
             'galleries' => $galleries,
@@ -294,6 +295,9 @@ class HomeController extends Controller
             'video.title' => 'nullable|string|max:255',
             'video.video_url' => 'nullable|file|mimes:mp4,mov,ogg,webm|max:512000',
             'video.youtube' => 'nullable|string|max:255',
+            'reels' => 'nullable|array',
+            'reels.*.title' => 'nullable|string|max:255',
+            'reels.*.reel_url' => 'nullable|file|mimes:mp4,mov,ogg,webm|max:512000',
         ]);
 
         DB::beginTransaction();
@@ -340,6 +344,24 @@ class HomeController extends Controller
                     'youtube' => $validated['video']['youtube'] ?? null,
                 ]);
             }
+            if(!empty($validated['reels'])) {
+                foreach ($validated['reels'] as $reel) {
+                    $reelPath = null;
+                    if (isset($reel['reel_url']) && $reel['reel_url'] instanceof \Illuminate\Http\UploadedFile) {
+                        $video = $reel['reel_url'];
+                        $extension = $video->getClientOriginalExtension();
+                        $filename = 'reel_' . uniqid() . '.' . $extension;
+                        $videopath = 'gallery/' . $filename;
+                        $awsvideo = Storage::disk('s3')->put($videopath,file_get_contents($video->getRealPath()));
+                        if ($awsvideo) {$reelPath = $videopath;}
+                    }
+                    Reel::create([
+                        'title' => $reel['title'],
+                        'reel_url' => $reelPath,
+                        'gallery_id' => $gallery->id,
+                    ]);
+                }
+            }
             DB::commit();
             return response()->json([
                 'status' => true,
@@ -357,10 +379,10 @@ class HomeController extends Controller
     }
 
     public function getAdminGalleryByid($id){
-        $gallery = Gallery::with('photos','video')->where('id',$id)->first();
+        $gallery = Gallery::with('photos','video','reels')->where('id',$id)->first();
         return response()->json([
             'status' => true,
-            'gallery' => $gallery->load('photos'),
+            'gallery' => $gallery->load('photos','reels'),
         ]);
     }
 
@@ -383,6 +405,13 @@ class HomeController extends Controller
             'video.title' => 'nullable|string|max:255',
             'video.video_url' => 'nullable|file|mimes:mp4,mov,ogg,webm|max:512000',
             'video.youtube' => 'nullable|string|max:255',
+            'ereels' => 'nullable|array',
+            'ereels.*.id' => 'required|exists:reels,id',
+            'ereels.*.title' => 'nullable|string|max:255',
+            'ereels.*.nreel_url' => 'nullable|file|mimes:mp4,mov,ogg,webm|max:512000',
+            'reels' => 'nullable|array',
+            'reels.*.title' => 'nullable|string|max:255',
+            'reels.*.nreel_url' => 'nullable|file|mimes:mp4,mov,ogg,webm|max:512000',
         ]);
 
         DB::beginTransaction();
@@ -464,7 +493,52 @@ class HomeController extends Controller
                     ]);
                 }
             }
-
+            if(!empty($validated['ereels'])) {
+                $existingReelIds = $gallery->reels()->pluck('id')->toArray();
+                $submittedReelIds = array_column($validated['ereels'] ?? [], 'id');
+                $idsToDelete = array_diff($existingReelIds, $submittedReelIds);
+                if (!empty($idsToDelete)) {
+                    $reelsTodelete = Reel::whereIn('id', $idsToDelete)->get();
+                    foreach ($reelsTodelete as $reelToDelete) {$reelToDelete->delete();}
+                }
+                foreach($validated['ereels'] as $ereel) {
+                    $existReelData = Reel::where('id',$ereel['id'])->first();
+                    $ereelPath = $existReelData->reel_url;
+                    if(isset($ereel['nreel_url']) && $ereel['nreel_url'] instanceof \Illuminate\Http\UploadedFile){
+                        $video = $ereel['nreel_url'];
+                        $extension = $video->getClientOriginalExtension();
+                        $filename = 'reel_' . uniqid() . '.' . $extension;
+                        $videopath = 'gallery/' . $filename;
+                        $awsvideo = Storage::disk('s3')->put($videopath,file_get_contents($video->getRealPath()));
+                        if ($awsvideo) {$ereelPath = $videopath;}
+                    }
+                    if($existReelData) {
+                        $existReelData->update([
+                            'title' => $ereel['title'] ?? $ereel['title'],
+                            'reel_url' => $ereelPath,
+                            'gallery_id' => $gallery->id,
+                        ]);
+                    }
+                }
+            }
+            if(!empty($validated['reels'])) {
+                foreach($validated['reels'] as $reel) {
+                    $reelPath = null;
+                    if(isset($reel['nreel_url']) && $reel['nreel_url'] instanceof \Illuminate\Http\UploadedFile){
+                        $video = $reel['nreel_url'];
+                        $extension = $video->getClientOriginalExtension();
+                        $filename = 'reel_' . uniqid() . '.' . $extension;
+                        $videopath = 'gallery/' . $filename;
+                        $awsvideo = Storage::disk('s3')->put($videopath,file_get_contents($video->getRealPath()));
+                        if ($awsvideo) {$reelPath = $videopath;}
+                    }
+                    Reel::create([
+                        'title' => $reel['title'] ?? $gallery->title,
+                        'reel_url' => $reelPath,
+                        'gallery_id' => $gallery->id,
+                    ]);
+                }
+            }
             $video = Video::findOrFail($validated['video']['id']);
             $videoUrl = $video->video_url ?? null;
             if($request->hasFile('video.video_url')) {

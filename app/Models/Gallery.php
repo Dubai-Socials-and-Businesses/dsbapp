@@ -34,4 +34,9 @@ class Gallery extends Model
     {
         return $this->hasOne(Video::class, 'gallery_id', 'id');
     }
+
+    public function reels()
+    {
+        return $this->hasMany(Reel::class, 'gallery_id', 'id');
+    }
 }

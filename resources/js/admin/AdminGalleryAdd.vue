@@ -64,6 +64,41 @@
                                       placeholder="Youtube Url" prepend-inner-icon="mdi-youtube"></v-text-field>
                     </v-card-text>
                 </v-card>
+                <v-card class="mt-5 border-sm" v-if="reels.length > 0 || showReelsSection">
+                    <v-card-title class="d-flex">Gallery Reels
+                        <v-spacer />
+                        <v-btn color="primary" size="small" @click="addReel"
+                               :disabled="reels.length >= 10">
+                            {{ reels.length === 0 ? 'Add First Reel' : 'Add More' }}
+                        </v-btn>
+                    </v-card-title>
+                    <v-card-text>
+                        <v-row>
+                            <v-col cols="12" md="4" v-for="(reel, index) in reels" :key="index">
+                                <v-text-field v-model="reel.title" :placeholder="title"
+                                              :label="`Reel ${index + 1} Title`" persistent-placeholder
+                                              variant="outlined" density="compact"
+                                />
+                                <VFileUpload
+                                    v-model="photo.image" clearable
+                                    accept="video/*" title="Upload Video"
+                                    icon="mdi-video"
+                                    variant="outlined"
+                                    density="comfortable"
+                                />
+                                <v-btn variant="outlined" color="error" density="compact" class="mt-2"
+                                       @click="removeReel(index)">
+                                    <v-icon>mdi-delete</v-icon> Remove
+                                </v-btn>
+                                <v-divider v-if="index < reels.length - 3" />
+                            </v-col>
+                        </v-row>
+                    </v-card-text>
+                </v-card>
+                <v-btn v-if="reels.length === 0" color="secondary" class="mt-2" density="comfortable"
+                       @click="showReelsSection = !showReelsSection">
+                    {{ showReelsSection ? 'Hide Reels' : 'Add Reels' }}
+                </v-btn>
             </v-col>
             <v-col cols="12" md="4">
                 <v-card class="border-sm">
@@ -91,6 +126,7 @@ export default {
             cdn:'https://dsbcdn.s3-accelerate.amazonaws.com/',
             gloading:false,
             showPhotosSection:false,
+            showReelsSection:false,
             title:'',
             main_image:null,
             description:'',
@@ -99,6 +135,11 @@ export default {
             photo:{
                 title:'',
                 image:null,
+            },
+            reels:[],
+            reel:{
+                title:'',
+                reel_url:null,
             },
             video:{
                 title:'',
@@ -136,6 +177,18 @@ export default {
                 this.showPhotosSection = false;
             }
         },
+        addReel() {
+            this.reels.push({
+                title: '',
+                reel_url: null,
+            });
+        },
+        removeReel(index) {
+            this.reels.splice(index, 1);
+            if (this.reels.length === 0) {
+                this.showReelsSection = false;
+            }
+        },
         formatDate(date) {
             if (!date) return '';
             return new Date(date).toLocaleString('en-GB', {
@@ -164,6 +217,7 @@ export default {
                 main_image:this.main_image,
                 gdate:dayjs(this.gdate).format('YYYY-MM-DD'),
                 photos:this.photos,
+                reels:this.reels,
                 video:this.video
             }
             axios.post('/gallery/add',ndata,headers)
@@ -179,7 +233,6 @@ export default {
                 .finally(()=>{
                     this.gloading = false;
                 })
-            console.log('ndata',ndata);
         }
     }
 }
