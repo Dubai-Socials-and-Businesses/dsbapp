@@ -15,5 +15,7 @@ class Review extends Model
         'status',
         'rating',
         'user_id',
+        'reviewer_name',
+        'review_date',
     ];
 }

@@ -16,9 +16,15 @@
             </v-col>
             <v-col cols="12" md="12">
                 <v-card>
-                   <v-data-table :items="reviews" :headers="reviewsHeaders" :hide-default-footer="reviews.length < 20">
+                   <v-data-table :items="reviews" :headers="reviewsHeaders" :hide-default-footer="reviews.length < 10">
                        <template v-slot:item.rating="{item}">
                            <v-rating :model-value="item.rating" active-color="orange" density="compact" readonly></v-rating>
+                       </template>
+                       <template v-slot:item.reviewer_name="{item}">
+                           <div>
+                               <div>Name: {{item.reviewer_name}}</div>
+                               <div>Date: {{item.review_date}}</div>
+                           </div>
                        </template>
                        <template v-slot:item.actions="{item}">
                            <div class="d-flex ga-1">
@@ -37,6 +43,9 @@
         <v-dialog v-model="addDialog" max-width="500" persistent>
             <v-card>
                 <v-card-text>
+                    <v-text-field v-model="defaultItem.reviewer_name" variant="outlined" density="compact" label="Reviewer Name"
+                                  placeholder="Alex John"
+                                  persistent-placeholder></v-text-field>
                     <v-text-field v-model="defaultItem.title" variant="outlined" density="compact" label="Title"
                                   placeholder="Review Title"
                                   persistent-placeholder></v-text-field>
@@ -44,6 +53,7 @@
                                 label="Review Text" placeholder="Review Text"
                                 persistent-placeholder></v-textarea>
                     <v-rating v-model="defaultItem.rating" color="orange" hover></v-rating>
+                    <v-date-input v-model="defaultItem.review_date" variant="outlined" density="compact"></v-date-input>
                     <v-select v-model="defaultItem.status" variant="outlined" density="compact" label="Status" placeholder="Status"
                               persistent-placeholder :items="['pending','verified','rejected']" hide-details></v-select>
                 </v-card-text>
@@ -63,6 +73,7 @@
                                 label="Review Text" placeholder="Review Text"
                                 persistent-placeholder></v-textarea>
                     <v-rating v-model="editedItem.rating" color="orange" hover></v-rating>
+                    <v-date-input v-model="editedItem.review_date" variant="outlined" density="compact"></v-date-input>
                     <v-select v-model="editedItem.status" variant="outlined" density="compact" label="Status" placeholder="Status"
                               persistent-placeholder :items="['pending','verified','rejected']"></v-select>
                 </v-card-text>
@@ -87,9 +98,12 @@
 </template>
 <script>
 import axios from "axios";
+import { VDateInput } from "vuetify/labs/components";
+import dayjs from "dayjs";
 
 export default {
     name:'AdminReviews',
+    components:{VDateInput},
     data(){
         return{
             cdn:'https://dsbcdn.s3-accelerate.amazonaws.com/',
@@ -104,6 +118,8 @@ export default {
                 rating:5.0,
                 user_id:'',
                 status:'pending',
+                reviewer_name:'Alex John',
+                review_date:null,
             },
             editedItem:{
                 id:'',
@@ -112,13 +128,15 @@ export default {
                 rating:'',
                 user_id:'',
                 status:'',
+                reviewer_name:'',
+                review_date:'',
             },
             reviews:[],
             reviewsHeaders:[
                 {title:'Title',key:'title'},
                 {title:'Review Text',key:'review_text'},
                 {title:'Rating',key:'rating'},
-                {title:'User',key:'user_id'},
+                {title:'Name',key:'reviewer_name'},
                 {title:'Status',key:'status'},
                 {title:'Actions',key:'actions'},
             ]
@@ -143,6 +161,8 @@ export default {
                 rating:this.defaultItem.rating,
                 user_id:this.defaultItem.user_id,
                 status:this.defaultItem.status,
+                reviewer_name:this.defaultItem.reviewer_name,
+                review_date:dayjs(this.defaultItem.review_date).format('YYYY-MM-DD'),
             }
             axios.post('/review/update',ndata,headers)
                 .then((resp)=>{
@@ -167,6 +187,8 @@ export default {
                 rating:this.editedItem.rating,
                 user_id:this.editedItem.user_id,
                 status:this.editedItem.status,
+                reviewer_name:this.editedItem.reviewer_name,
+                review_date:dayjs(this.editedItem.review_date).format('YYYY-MM-DD'),
             }
             axios.post('/review/update',udata,headers)
                 .then((resp)=>{

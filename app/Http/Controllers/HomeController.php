@@ -732,6 +732,8 @@ class HomeController extends Controller
                     'review_text' => $request->review_text ?? "Great Service from DUBSB",
                     'rating' => $request->rating ?? 5.0,
                     'status' => $request->status ?? 'pending',
+                    'reviewer_name' => $request->reviewer_name ?? 'Alex John',
+                    'review_date' => $request->review_date ?? null,
                     'user_id' => $request->user_id ?? 1,
                 ]);
                 return response()->json([
@@ -745,6 +747,8 @@ class HomeController extends Controller
                 'review_text' => $request->review_text ?? "Great Service from DUBSB",
                 'rating' => $request->rating ?? 5.0,
                 'status' => $request->status ?? 'pending',
+                'reviewer_name' => $request->reviewer_name ?? 'Alex John',
+                'review_date' => $request->review_date ?? null,
                 'user_id' => $request->user_id ?? 1,
             ]);
             return response()->json([
