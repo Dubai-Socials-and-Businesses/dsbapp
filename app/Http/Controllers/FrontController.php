@@ -76,7 +76,7 @@ class FrontController extends Controller
 
     public function galleryApi()
     {
-        $galleries = Gallery::with('photos','video')->get();
+        $galleries = Gallery::with('photos','video','reels')->get();
         return response()->json([
             'success' => true,
             'galleries' => $galleries
