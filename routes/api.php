@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FrontController;
@@ -14,6 +15,8 @@ use App\Http\Controllers\AuthController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::post('/stripe/webhook', [StripeWebhookController::class,'webhook']);
 
 Route::get('/homeapis',[FrontController::class,'homeApis']);
 Route::get('/blogs',[FrontController::class,'blogsApi']);
