@@ -14,7 +14,7 @@ class FrontController extends Controller
 {
     public function homeApis(){
         $partners = Partner::all();
-        $reviews = Review::all();
+        $reviews = Review::Where('status','verified')->get();
         return response()->json([
             'success' => true,
             'partners' => $partners,
@@ -115,6 +115,16 @@ class FrontController extends Controller
         return response()->json([
             'success' => true,
             'packages' => $packages
+        ]);
+    }
+
+    public function reviewsApi()
+    {
+        $reviews = Review::Where('status','verified')->get();
+        return response()->json([
+            'success' => true,
+            'reviews' => $reviews,
+            'reviews_count' => $reviews->count() ?? null
         ]);
     }
 
