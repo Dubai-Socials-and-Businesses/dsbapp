@@ -27,6 +27,7 @@
                 <v-list-item to="/sadmin/blogs">Blogs</v-list-item>
                 <v-list-item to="/sadmin/reviews">Reviews</v-list-item>
                 <v-list-item to="/sadmin/partners">Partners</v-list-item>
+                <v-list-item to="/sadmin/packages">Packages</v-list-item>
                 <v-divider></v-divider>
                 <v-list-item @click="logout" title="Logout" prepend-icon="mdi-logout" />
             </v-list>

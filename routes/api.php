@@ -23,6 +23,7 @@ Route::get('/event/{slug}',[FrontController::class,'getEventBySlug']);
 Route::get('/galleries',[FrontController::class,'galleryApi']);
 Route::get('/partners',[FrontController::class,'partnersApi']);
 Route::get('/partner/{id}',[FrontController::class,'getPartnerById']);
+Route::get('/packages',[FrontController::class,'packagesApi']);
 
 Route::post('/login', [AuthController::class, 'apiLogin']);
 Route::post('/register', [AuthController::class, 'register']);

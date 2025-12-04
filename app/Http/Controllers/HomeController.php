@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Blog;
 use App\Models\Event;
 use App\Models\Gallery;
+use App\Models\Package;
 use App\Models\Partner;
 use App\Models\Photo;
 use App\Models\Reel;
@@ -829,6 +830,62 @@ class HomeController extends Controller
                 'status' => true,
                 'review' => $review,
             ]);
+        }
+    }
+
+    public function adminPackages()
+    {
+        $packages = Package::get();
+        return response()->json([
+            'status' => true,
+            'packages' => $packages,
+        ]);
+    }
+
+    public function updatePackage(Request $request)
+    {
+        $package = Package::find($request->id);
+        if($package){
+            if($request->mtype == "delete"){
+                $package->delete();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Package deleted successfully',
+                ]);
+            } else {
+                $package->update([
+                    'title' => $request->get('title') ?? "Silver",
+                    'price' => $request->get('price') ?? 0,
+                    'status' => $request->get('status') ?? 'inactive',
+                    'features' => $request->get('features') ?? null,
+                ]);
+                return response()->json([
+                    'status' => true,
+                    'package' => $package,
+                    'message' => 'Package updated successfully',
+                ]);
+            }
+        } else {
+            $package = Package::create([
+                'title' => $request->get('title') ?? "Silver",
+                'price' => $request->get('price') ?? 0,
+                'status' => $request->get('status') ?? 'inactive',
+                'features' => $request->get('features') ?? null,
+                'pid' => 'pid_'.uniqid(),
+            ]);
+            if($package){
+                return response()->json([
+                    'status' => true,
+                    'package' => $package,
+                    'message' => 'Package created successfully',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Package not created',
+                ]);
+            }
+
         }
     }
 }

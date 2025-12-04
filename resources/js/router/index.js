@@ -14,6 +14,7 @@ import AdminBlogs from "@/admin/AdminBlogs.vue";
 import AdminBlogAdd from "@/admin/AdminBlogAdd.vue";
 import AdminBlogEdit from "@/admin/AdminBlogEdit.vue";
 import AdminPartners from "@/admin/AdminPartners.vue";
+import AdminPackages from "@/admin/AdminPackages.vue";
 
 
 
@@ -32,6 +33,7 @@ const routes = [
     {path:'/sadmin/blog/add',component:AdminBlogAdd,name:"AdminBlogAdd",meta: { requiresAuth: true }},
     {path:'/sadmin/blog/edit/:blog_id',component:AdminBlogEdit,name:"AdminBlogEdit",props:true,meta: { requiresAuth: true }},
     {path:'/sadmin/partners',component:AdminPartners,name:"AdminPartners",meta: { requiresAuth: true }},
+    {path:'/sadmin/packages',component:AdminPackages,name:"AdminPackages",meta: { requiresAuth: true }},
     // {path: '/:catchAll(.*)*',redirect:'/login'}
 ]
 

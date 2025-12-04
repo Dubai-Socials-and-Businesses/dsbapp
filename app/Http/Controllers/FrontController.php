@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Blog;
 use App\Models\Event;
 use App\Models\Gallery;
+use App\Models\Package;
 use App\Models\Partner;
 use App\Models\Review;
 use Illuminate\Http\Request;
@@ -106,6 +107,15 @@ class FrontController extends Controller
                 'message' => 'Partner not found'
             ]);
         }
+    }
+
+    public function packagesApi()
+    {
+        $packages = Package::where('status','=','active')->orderBy('price','ASC')->get();
+        return response()->json([
+            'success' => true,
+            'packages' => $packages
+        ]);
     }
 
    public function homePage(){

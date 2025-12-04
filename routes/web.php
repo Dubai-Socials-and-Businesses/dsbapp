@@ -48,6 +48,8 @@ Route::prefix('/admin')->middleware('auth')->group(function(){
     Route::post('/review/update',[HomeController::class,'updateReview'])->name('updateReview');
     Route::get('/partners',[HomeController::class,'adminPartners'])->name('adminPartners');
     Route::post('/partner/update',[HomeController::class,'updatePartner'])->name('updatePartner');
+    Route::get('/packages',[HomeController::class,'adminPackages'])->name('adminPackages');
+    Route::post('/package/update',[HomeController::class,'updatePackage'])->name('updatePackage');
 });
 
 Route::post('/admin/logout', [HomeController::class, 'adminLogout'])->name('admin.logout');
