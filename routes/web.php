@@ -3,16 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\FrontController;
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+use App\Http\Controllers\StripeWebhookController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -24,6 +15,8 @@ Route::get('/', function () {
 //Route::get('/about', [FrontController::class,'about'])->name('about');
 //Route::get('/contact', [FrontController::class,'contact'])->name('contact');
 //Route::get('/blogs', [FrontController::class,'blogs'])->name('blogs');
+
+Route::post('/stripe/webhook', [StripeWebhookController::class,'webhook']);
 
 Auth::routes();
 
