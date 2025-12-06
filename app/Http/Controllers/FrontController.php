@@ -15,10 +15,14 @@ class FrontController extends Controller
     public function homeApis(){
         $partners = Partner::all();
         $reviews = Review::Where('status','verified')->get();
+        $fevent = Event::withCount('attendees')->with('attendees')->whereDate('start_date', '>=', today())
+            ->orderBy('start_date', 'ASC')
+            ->first();
         return response()->json([
             'success' => true,
             'partners' => $partners,
-            'reviews' => $reviews
+            'reviews' => $reviews,
+            'fevent' => $fevent
         ]);
     }
 
