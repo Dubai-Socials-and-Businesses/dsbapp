@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Stripe\Webhook;
@@ -32,6 +33,12 @@ class StripeWebhookController extends Controller
                     $user->role = 'user';
                     $user->save();
                 }
+                $payment = new Payment();
+                $payment->name = $session->customer_details->name ?? null;
+                $payment->email = $session->customer_details->email ?? null;
+                $payment->payment_status = $session->payment_status;
+                $payment->client_reference_id = $session->client_reference_id ?? null;
+                $payment->amount_total = $session->amount_total ?? 0;
             }
             return response()->json(['success' => true,'status' => $event->type]);
 
