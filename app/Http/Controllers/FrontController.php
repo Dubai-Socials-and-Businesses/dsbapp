@@ -54,7 +54,11 @@ class FrontController extends Controller
 
     public function eventsApi()
     {
-        $events = Event::withCount('attendees')->with('attendees')->orderBy('start_date','DESC')->get();
+        $events = Event::withCount('attendees')
+            ->with('attendees')
+            ->whereDate('start_date', '>=', today())
+            ->where('status','active')
+            ->orderBy('start_date','DESC')->get();
         return response()->json([
             'success' => true,
             'events' => $events
