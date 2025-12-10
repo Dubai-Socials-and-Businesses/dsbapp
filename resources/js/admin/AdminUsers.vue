@@ -20,7 +20,7 @@
             <v-col cols="12" md="12">
                 <v-card>
                     <v-data-table :items="users" :headers="usersHeaders" density="comfortable" :search="usearch"
-                                  :hide-default-footer="users.length < 10">
+                                  items-per-page="25">
                         <template v-slot:item.email_verified_at="{item}">
                             <v-icon v-if="item.email_verified_at" color="green" title="verified">mdi-account-check</v-icon>
                             <v-icon v-else color="red" title="Unverified">mdi-account-question</v-icon>

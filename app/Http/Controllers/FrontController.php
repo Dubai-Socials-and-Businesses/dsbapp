@@ -82,12 +82,36 @@ class FrontController extends Controller
         }
     }
 
-    public function galleryApi()
+    public function galleryApi(Request $request)
     {
-        $galleries = Gallery::with('photos','video','reels')->get();
+        $month = $request->get('month');
+        $query = Gallery::with('photos', 'video', 'reels')
+            ->select('id', 'gdate', 'title', 'description') // Add needed fields
+            ->orderBy('gdate', 'desc');
+
+        if ($month) {
+            $query->whereMonth('gdate', $month)
+                ->whereYear('gdate', substr($month, 0, 4));
+        }
+
+//        $galleries = $query->get()
+//            ->groupBy(function ($gallery) {
+//                return $gallery->gdate->format('Y-m'); // Group by YYYY-MM
+//            })
+//            ->map(function ($monthGalleries, $monthKey) {
+//                return [
+//                    'month' => $monthKey, // "2025-12"
+//                    'month_display' => \Carbon\Carbon::createFromFormat('Y-m', $monthKey)->format('F Y'), // "December 2025"
+//                    'count' => $monthGalleries->count(),
+//                    'galleries' => $monthGalleries
+//                ];
+//            });
+        $galleries = Gallery::with('photos','video','reels')
+            ->orderBy('gdate', 'DESC')
+            ->get();
         return response()->json([
             'success' => true,
-            'galleries' => $galleries
+            'galleries' => $galleries,
         ]);
     }
 
