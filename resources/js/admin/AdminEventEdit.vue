@@ -185,7 +185,7 @@ export default {
                 tags:this.event.tags,
                 status:this.event.status,
             }
-            axios.post('/event/edit/',ndata,headers)
+            axios.post('/event/edit',ndata,headers)
                 .then((resp)=>{
                     this.getEventById();
                     this.image = null;
