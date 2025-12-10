@@ -20,6 +20,7 @@ class StripeWebhookController extends Controller
             if($event->type == 'checkout.session.completed') {
                 $session = $event->data->object;
                 $customerEmail = $session->customer_details->email ?? null;
+                $customerName = $session->customer_details->name ?? null;
                 $amountTotal = $session->amount_total / 100; // amount in AED
                 $paymentStatus = $session->payment_status;
                 $clientReferenceId = $session->client_reference_id ?? null;
@@ -28,7 +29,7 @@ class StripeWebhookController extends Controller
                 if(!$user) {
                     $user = new User();
                     $user->email = $customerEmail;
-                    $user->name = $customerEmail;
+                    $user->name = $customerName ?? $customerEmail;
                     $user->password = bcrypt($customerEmail);
                     $user->role = 'user';
                     $user->save();
