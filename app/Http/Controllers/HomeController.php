@@ -321,7 +321,7 @@ class HomeController extends Controller
                 'title' => $validated['title'],
                 'main_image' => $mimagePath,
                 'description' => $validated['description'],
-                'gdate' => $validated['gdate'],
+                'gdate' => Carbon::parse($validated['gdate'])->format('Y-m-d'),
             ]);
             if(!empty($validated['photos'])) {
                 $this->processPhotos($gallery,$validated['photos']);
@@ -436,7 +436,7 @@ class HomeController extends Controller
                 'title' => $validated['title'],
                 'main_image' => $mImagePath,
                 'description' => $validated['description'],
-                'gdate' => $validated['gdate'],
+                'gdate' => Carbon::parse($validated['gdate'])->format('Y-m-d'),
             ]);
             if(!empty($validated['gphotos'])) {
                 $existingPhotoIds = $gallery->photos()->pluck('id')->toArray();
