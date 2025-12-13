@@ -309,7 +309,7 @@ class HomeController extends Controller
                 $filename = 'main_'.uniqid().'.png';
                 $imgpath = 'gallery/' . $filename;
                 $img = Image::make($image->getRealPath())
-                    ->resize(1200, 675, function ($constraint) {
+                    ->resize(2400, 1350, function ($constraint) {
                         $constraint->aspectRatio();
                     });
                 $success = Storage::disk('s3')->put($imgpath, (string)$img->encode());
@@ -455,7 +455,7 @@ class HomeController extends Controller
                         $image = $gphoto['nimage'];
                         $filename = 'photo_'.uniqid().'.png';
                         $imgpath = 'gallery/' . $filename;
-                        $img = Image::make($image->getRealPath())->resize(1200, 675, function ($constraint) {
+                        $img = Image::make($image->getRealPath())->resize(2400, 1350, function ($constraint) {
                                 $constraint->aspectRatio();
                             });
                         $success = Storage::disk('s3')->put($imgpath, (string)$img->encode());

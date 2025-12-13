@@ -16,10 +16,6 @@ class Gallery extends Model
         'gdate',
     ];
 
-    protected $casts = [
-        'gdate' => 'date',
-    ];
-
     public function photos()
     {
         return $this->hasMany(Photo::class, 'gallery_id', 'id');
