@@ -106,7 +106,6 @@
             <td style="padding: 5px;">
                 <p>Hello {{$data['name'] ?? "Sir/Mam"}},</p>
                 <p>{{$data['title'] ?? " "}}</p>
-                <p>{{$data['subject'] ?? " "}}</p>
                 <p>{!! $contentData['content'] !!}</p>
             </td>
         </tr>
