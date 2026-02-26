@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
+use App\Models\EventUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -99,5 +101,56 @@ class AuthController extends Controller
             'message' => 'Password reset successfully',
             'user' => $user,
         ]);
+    }
+
+    public function me(Request $request)
+    {
+        return response()->json(auth()->user());
+    }
+
+    public function userEvents(Request $request)
+    {
+        $uevents = Event::get();
+//        $eventusers = EventUser::get();
+        return response()->json([
+            'success' => true,
+            'uevents' => $uevents,
+        ]);
+    }
+
+    public function userEventLiked(Request $request, $event_id)
+    {
+        $userEvent = EventUser::where('event_id', $event_id)->first();
+        if($userEvent){
+            return response()->json([
+                'success' => true,
+                'userEvent' => $userEvent,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'userEvent' => null,
+            ]);
+        }
+    }
+
+    public function userInterested(Request $request)
+    {
+        $user = auth()->user();
+        $userId = $user->id;
+        $isLiked = EventUser::where('event_id', $request->event_id)->where('user_id', $userId)->updateOrCreate(
+            ['event_id' => $request->event_id, 'user_id' => $userId],
+            [
+                'event_id' => $request->event_id,
+                'user_id' => $userId,
+                'status' => 'interested',
+            ],
+        );
+        if($isLiked){
+            return response()->json([
+                'success' => true,
+                '$isLiked' => $isLiked,
+            ]);
+        }
     }
 }

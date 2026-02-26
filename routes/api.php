@@ -33,6 +33,9 @@ Route::post('/login', [AuthController::class, 'apiLogin']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:api')->group(function () {
+    Route::get('/user',[AuthController::class, 'me']);
+    Route::get('/user/events', [AuthController::class, 'userEvents']);
+    Route::get('/user/event/{event_id}', [AuthController::class, 'userEventLiked']);
+    Route::post('/user/event/likes', [AuthController::class, 'userInterested']);
 });

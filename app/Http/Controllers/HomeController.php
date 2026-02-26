@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\MarketingEmail;
 use App\Models\Blog;
 use App\Models\Event;
 use App\Models\Gallery;
@@ -15,31 +16,75 @@ use App\Models\Video;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function index()
     {
         return view('home');
     }
+
+    public function sendMarketingEmail(Request $request)
+    {
+//        $users = User::whereNotNull('email')->get();
+//        foreach ($users as $user) {
+//            $data = [
+//                'subject' => 'Special Offer Just for You',
+//                'title' => 'Big Sale This Week!',
+//                'content' => '<strong>Get 30% OFF</strong> on all products. Limited time only!'
+//            ];
+//
+//            Mail::to('ssukhraj12@gmail.com')->send(new MarketingEmail($data));
+//        }
+        $data = [
+            'name' => $request->name,
+            'subject' => $request->subject ?? 'Special Offer Just for You',
+            'title' => $request->title ?? 'Offer This Week!',
+            'content' => $request->text ?? '<strong>Special Offer</strong> on all products. Limited time only!'
+        ];
+
+        Mail::to($request->email)->send(new MarketingEmail($data));
+
+        return response()->json(['message' => 'Email sent successfully']);
+    }
+
+//    public function sendEmail(Request $request)
+//    {
+//        $client = new Client();
+//        $response = $client->post('https://send.api.mailtrap.io/api/send',[
+//            'headers' => [
+//                'Authorization' => 'Bearer ' . "82e50c17874b31be9eb1493f016c90ea",
+//                'Content-Type' => 'application/json',
+//            ],
+//            'json' => [
+//                'from' => [
+//                    'email' => 'noreply@dubaisocialsandbusinesses.com',
+//                ],
+//                'to' => [
+//                    ['email' => $request->email],
+//                ],
+//                'template_uuid' => '110db656-6b6b-4960-9c1f-d20aae137be1',
+//                'template_variables' => [
+//                    'name' => $request->name,
+//                    'order_id' => 1234,
+//                ],
+//            ]
+//        ]);
+//
+//        return response()->json([
+//            'status' => $response->getStatusCode(),
+//            'body' => json_decode($response->getBody(), true)
+//        ]);
+//    }
 
     public function adminDashboard()
     {

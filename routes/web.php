@@ -21,6 +21,7 @@ Route::post('/stripe/webhook', [StripeWebhookController::class,'webhook']);
 Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::post('/admin/send/memail', [HomeController::class, 'sendMarketingEmail']);
 
 Route::prefix('/admin')->middleware('auth')->group(function(){
     Route::get('/dashboard',[HomeController::class,'adminDashboard'])->name('adminDashboard');

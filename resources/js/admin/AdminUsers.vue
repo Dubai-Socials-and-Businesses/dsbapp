@@ -30,7 +30,7 @@
                         </template>
                         <template v-slot:item.actions="{item}">
                             <div class="d-flex ga-1">
-                                <v-btn icon color="green" density="compact" variant="outlined">
+                                <v-btn @click="openEmailDialog(item)" icon color="green" density="compact" variant="outlined">
                                     <v-icon size="x-small">mdi-email-edit</v-icon>
                                 </v-btn>
                                 <v-btn icon color="primary" density="compact" variant="outlined">
@@ -45,6 +45,23 @@
                 </v-card>
             </v-col>
         </v-row>
+        <v-dialog v-model="emailDialog" max-width="500">
+            <v-card>
+                <v-card-text>
+                    <v-text-field label="Subject" v-model="subject" variant="underlined" density="compact"/>
+                    <v-text-field label="Title" v-model="title" variant="underlined" density="compact"/>
+                    <div>Hello {{editedItem.name}}</div>
+                    <v-textarea label="Message" v-model="text" variant="underlined"/>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn @click="sendmEmailtoUser" :loading="sendLoading" color="success" variant="elevated" size="small" append-icon="mdi-send">
+                        {{sendLoading ? "Sending.." : "Send"}}
+                        Send
+                    </v-btn>
+                    <v-btn @click="emailDialog = false" color="red" variant="outlined" size="small" append-icon="mdi-close">Cancel</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
 <script>
@@ -55,16 +72,28 @@ export default {
     name:'AdminUsers',
     data(){
         return{
+            sendLoading:false,
+            emailDialog:false,
             usearch:'',
             users:[],
             usersHeaders:[
                 {title:"Name",key:'name'},
                 {title:"Email",key:'email'},
+                {title:"Phone",key:'phone'},
                 {title:"Verified",key:'email_verified_at'},
                 {title:"Role",key:'role'},
                 {title:"Created",key:'created_at'},
                 {title:"Actions",value:'actions'},
             ],
+            editedIndex:-1,
+            editedItem:{
+                email:"",
+                name:"",
+            },
+            emessage:"",
+            subject:"Our Offer",
+            title:"Welcome to Event",
+            text:"Welcome to our Event",
         }
     },
     created() {
@@ -77,6 +106,35 @@ export default {
                 .then((resp)=>{
                     this.users = resp.data.users;
                 })
+        },
+        openEmailDialog(item){
+            this.editedIndex = this.users.indexOf(item);
+            this.editedItem = Object.assign({},item);
+            this.emailDialog = true;
+        },
+        sendmEmailtoUser(item){
+            this.sendLoading = true;
+            const udata = {
+                subject:this.subject,
+                email:this.editedItem.email,
+                name:this.editedItem.name,
+                title:this.title,
+                text:this.text,
+            }
+            console.log('udata',udata);
+            axios.post('/send/memail',udata)
+                .then((resp)=>{
+                    this.emessage = resp.data.message;
+                    this.emailDialog = false;
+                    window.Toast.success(resp.data.message);
+                })
+                .catch((err)=>{
+                    window.Toast.error(err)
+                })
+                .finally(()=>{
+                    this.sendLoading = false;
+                })
+
         },
         exportToCSV() {
             const headers = ['Name', 'Email', 'Role','Phone'];
